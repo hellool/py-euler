@@ -1,0 +1,29 @@
+Finding and testing primes, especially large primes, is a common task necessary to solve PE problems. Thus, it is important to understand the method to find them, and the computational complexity of doing so. 
+
+
+==SIEVE METHOD==
+The typical method of finding primes is the "sieve method." This works by continuously adding larger primes to the end of a list, checking for primality by seeing if the candidate number is divisible by any of the smaller primes. 
+
+Naively, finding the (N+1)th prime has N^2 complexity since we must first repeat the process N times to construct the list, performing an average of ~N/2 divisibility checks each time. 
+
+Fortunately we do not need to test all primes less than N, it is sufficient to check all primes less than or equal to the square root of N. This is because any potential divisor larger than the square root of N will be paired with a divisor smaller than it, so if we get past this then we have exhausted all possible divisor pairs for N. 
+
+Thus the complexity is N * N^(0.5) or N^(1.5)
+
+This is acceptable for smaller primes, but once N gets sufficiently large (10^7 to 10^8 range, from personal experience) we will run into performance issues. 
+
+==PROBABALISTIC NUMBER THEORY METHOD==
+Some project Euler problems require checking primality of numbers dozens of digits long. How do we do this? A sieve approach is computationally infeasible, so we will use a number-theory based approach to checking primality. Specifically we will use the Miller-Rabin algorithm, which is a more efficient version of the Fermat's algorithm. These techniques are based on Fermat's Little Theorem, an important and deceptively simple result in Number theory, which states that:
+
+If p is prime and a natural number a is not divisible by p, then:
+
+a^(p-1) === 1 (mod p)
+
+Or in other words, a raised to the power p-1 will always be equal to a multiple of p plus 1. To quote wikipedia:
+"If one wants to test whether p is prime, then we can pick random integers a not divisible by p and see whether the equality holds. If the equality does not hold for a value of a, then p is composite. This congruence is unlikely to hold for a random a if p is composite. Therefore, if the equality does hold for one or more values of a, then we say that p is probably prime."
+
+So... what can we do with this information? Well, it turns out that if we repeat enough candidate values of a for a given number p, we can determine with extreme likelihood whether p is prime, and we can do this in near constant time. 
+
+Miller-Rabin is a well-known algorithm that takes advantage of this property to test for the primality of a number. It is easy to perform it with enough iterations to determine the primality of a large number with a vanishingly small rate of error, small enough that we can ignore it in practice. This is how the extremely large prime numbers used in public key cryptography are often generated -- sufficiently large candidate numbers are generated at random until one passes the Miller-Rabin test.
+
+The test is not hard to implement and we will use it in several PE problems.
