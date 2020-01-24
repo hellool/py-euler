@@ -3,6 +3,7 @@
 
 import numpy as np
 import math
+import random
 
 #Given a vector of numbers, this function normalizes it to the unit vector in the same direction with length 1
 def unit_vector(v):
@@ -22,6 +23,75 @@ def angle_between(v1, v2, as_degrees=False):
         return (180/math.pi) * angle
     else:
         return angle
+    
+#This function returns True if n is prime and False if n is composite.
+#The method used to determine primality depends on the size of n
+# if n <= 100, we just check against a short list of primes<100
+# if n <= 10000, we use the same list in a sieve method
+# if n > 10000 we will use the Miller-Rabin test for primality
+def is_prime(n):
+    if n>2 and n%2 == 0:
+        return False
+    if type(n) != int:
+        if int(n) == n:
+            n = int(n)
+        else:
+            print("Warning: {} is not an integer in prime test".format(n))
+            return False
+    primes_100 = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+    if n <= 10000:
+        if n <= 100:
+            return (n in primes_100)
+        else:
+            for p in primes_100:
+                if n%p == 0:
+                    return False
+            return True
+    
+    else: #use Miller-Rabin
+        r = 0
+        d = 0
+        
+        x = n-1
+        while x%2 == 0:
+            r += 1
+            x = x // 2
+        d = x 
+        #d will always be odd since n is odd
+        # n = [2^r * d] + 1
+        
+        #per wikipedia: if n < 3,474,749,660,383 (3.47e13), it is enough to test a = 2, 3, 5, 7, 11, and 13 (First 6)
+        #if n < 3,317,044,064,679,887,385,961,981, (3.31e25), it is enough to test a = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, and 41 (First 13)
+        if n < 3*10**12:
+            K = 6
+        elif n < 3*10**24:
+            K = 13
+        else:
+            K = int(math.log(n, 10)) #K roughly equal to number of digits
+        
+        for i in range(K):
+            witness = False
+            if i <= 20:
+                a = primes_100[i]
+                #for early iterations, use small primes for a
+            else:
+                a = random.randint(15, n-2)
+                
+            x = pow(a,d,n)
+            if x == 1 or x == (n-1):
+                continue #witness to primality
+                
+            for j in range(r-1):
+                x = pow(x,2,n)
+                if x == (n-1):
+                    witness = True #witness to primality
+                    break
+            if witness:
+                continue
+            else:
+                return False #composite
+        
+        return True #probably prime
 
 #This function returns an ordered list of prime numbers less than `max_n`
 #Alternatively return an ordered list of the first `max_primes` prime numbers.
@@ -67,30 +137,11 @@ def generate_primes(max_n = 100, max_primes = None, as_set = False):
         return set(primes)
     else:
         return primes
-    
-#This function returns True if n is prime and False if n is composite.
-#The method used to determine primality depends on the size of n
-# if n <= 100, we just check against a short list of primes<100
-# if n <= 10000, we use the same list in a sieve method
-# if n > 10000 we will use the Miller-Rabin test for primality
-def is_prime(n):
-    if type(n) != int:
-        if int(n) == n:
-            n = int(n)
-        else:
-            print("Warning: {} is not an integer in prime test".format(n))
-            return False
-    if n <= 10000:
-        primes_100 = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
-        if n <= 100:
-            return (n in primes_100)
-        else:
-            for p in primes_100:
-                if n%p == 0:
-                    return False
-            return True
-    
-    else: #use Miller-Rabin
+           
+##test with this list of 3 50 digit numbers. the first two are known primes, the third is composite
+#for i in [22953686867719691230002707821868552601124472329079,30762542250301270692051460539586166927291732754961,30762542250301270692461460539586166927291732754961]:
+#    print(i, is_prime(i))
+        
         
         
     
