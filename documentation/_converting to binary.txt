@@ -1,0 +1,83 @@
+Converting to Binary
+
+Lets look at problem 36
+
+===
+Double-base palindromes
+
+Problem 36
+The decimal number, 585 = 10010010012 (binary), is palindromic in both bases.
+
+Find the sum of all numbers, less than one million, which are palindromic in base 10 and base 2.
+
+(Please note that the palindromic number, in either base, may not include leading zeros.)
+===
+
+We have seen in earlier problems how to determine if a number is a palindrome (ref. Operations on Digits), so the crux of this problem is converting base 10 numbers into binary or base 2 to see if they are still palindromes.
+
+What does it mean for a number to be base 10? It means that a single digit can have 10 different values, and a number with N digits can have 10^N different values. Similarly base 2 means that a single digit has two values and a number with N digits has 2^N possible values. The number "101" in base ten, if we write out each digit as a separate term, is:
+ 1*(10^2) + 0*(10^1) + 1*(10^0) = 1*100 + 0*10 + 1*1 = 101
+but in binary it's:
+ 1*(2^2) + 0*(2^1) + 1*(2^0) = 1*4 + 0*2 + 1*1 = 4
+
+So how do we convert a base 10 number to base 2?
+Lets start with the number 123. It can help to write it as an equation with each binary digit given its own term, as above. We don't know the binary digits yet so we'll label them b_0, b_1 and so on where b_0 is the right most or "least significant" digit. It may seem confusing to count from the end of the number like this, but makes it easier to keep track of which power of 2 is associated with each digit. b_0 with 2^0, b_1 with 2^1, and so on.
+
+But wait, we don't know how many digits there are in our answer! Or do we? Remember that a binary number with N digits can store a maximum value of (2^N - 1). What's the smallest power of 2 which is larger than our number? That will tell us the number of digits. In this case we have:
+2^6 = 64
+2^7 = 128
+
+So our number, 123, is between 2^6 and 2^7, which means we need 7 binary digits, b_0 through b_6. We can write:
+
+123 = b_6 * 2^6 + b_5 * 2^5 + b_4 * 2^4 + b_3 * 2^3 + b_2 * 2^2 + b_1 * 2^1 + b_0 * 2^0, or:
+123 = b_6*64 + b_5*32 + b_4*16 + b_3*8 + b_2*4 + b_1*2 + b_0*1
+
+Converting 123 to binary form then becomes the task of solving this equation for the 7 variables on the right, each constrained to 0 or 1. The way we will do this is one term at a time, by using the fact that the last digit of a binary string tells you whether it is even or odd.
+
+Note that if the last digit is 1 then the number is odd and if it's 0 then the number is even. This is clear since all of the other binary terms are some multiple of a [non-zero] power of 2.
+
+123 is odd, or in programming terms, it's equal to 1 modulo 2. In python as in many languages we use % for the modulo operator, e.g.
+>>print(123 % 2)
+This line prints 123 mod 2 which is 1. So we know that b_0 = 1, but what about the other digits? Well if we look at the equation above, every term is divisible by 2 on the right hand side except for that last one. Now that we know b_0, we can subtract that term from both sides, leaving us with:
+
+122 = b_6*64 + b_5*32 + b_4*16 + b_3*8 + b_2*4 + b_1*2
+
+Since we removed the only odd term, this equation can always be divided through by 2, leaving:
+
+61 = b_6*32 + b_5*16 + b_4*8 + b_3*4 + b_2*2 + b_1*1
+
+Do you see where we are going with this? Now checking whether 61 is even or odd will tell us the new last digit, which is b_1. 61 is odd so b_1 = 1. Lets repeat the process until we run out of digits!
+
+binary so far: ?????11
+
+60 = b_6*32 + b_5*16 + b_4*8 + b_3*4 + b_2*2
+30 = b_6*16 + b_5*8 + b_4*4 + b_3*2 + b_2*1
+b_2 = 0 since 30 is even
+
+15 = b_6*8 + b_5*4 + b_4*2 + b_3*1
+b_3 = 1 since 15 is odd
+
+14 = b_6*8 + b_5*4 + b_4*2
+7 = b_6*4 + b_5*2 + b_4*1
+b_4 = 1 since 7 is odd
+
+6 = b_6*4 + b_5*2
+3 = b_6*2 + b_5*1
+b_5 = 1 since 3 is odd
+
+2 = b_6*2
+1 = b_6
+
+That's all 7 digits! Now we concatenate them (in reverse order, so starting with b_6): 1111011
+
+Before we write the code, lets just summarize the process for converting a number to binary.
+1. let n be a natural number expressed in base 10
+2. find p, the smallest power of 2 larger than n, either using a logarithm or iterating through powers.
+3. Store n in a temporary variable, x
+4a. if x is even, add a 0 to the binary string, moving from right to left.
+4b. if x is odd, add a 1 instead, and subtract 1 from x. (x <-- (x-1))
+5. If x is now 0, we are done and our binary string should be equal to the binary form of n. Otherwise go to the next step.
+6. Divide x by 2.
+7. Go to step 4.
+
+This also works for powers other than 2. For example if we wanted to convert to hexadecimal (base 16) we would use powers of 16 instead of 2. Instead of checking if a number is even or odd, we would compute the number modulo 16, and the result is equal to the current digit. Then divide by 16 (instead of 2) and move to the next digit to the left. The exact algorithm is left as an exercise.
