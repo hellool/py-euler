@@ -16,20 +16,20 @@ Lets define a function is_palindrome(n) which checks if n is a palindrome and re
 
 >>def is_palindrome(n):
 
-first we need to convert n into a string or str. This is very easy to do in Python using the built in str() function.
+first we need to convert n into a string. This is very easy to do in Python using the built in str() function.
 
 >>string_n = str(n)
 
-We'll need to loop over the index of the current character we are looking at, which we can do using a range() function. We need the indices and not just the characters in this case, so `for digit in string_n` is not going to work, although using enumerate() would work and be a Pythonic solution, albeit unnecessary. 
+We'll need to loop over the index of the current character we are looking at, which we can do using a range() function. We need the indices and not just the characters in this case, so `for digit in string_n` is not going to work, although using enumerate() would work and be a Pythonic solution.
 
 >>for i in range(len(string_n)):
 
-Now we can take advantage of a Python feature, negative indices. Unlike most languages, we can use negative numbers as indices for something like a string, which will count backward from the end of the string. array[-1] returns the last element, array[-2] the second to last and so on. You could also of course use array[len(array)-1] to get the last element, but this is much more elegant, in my opinion! This is great because if we add 1 to the current index of our loop, then it's inverse is that many positions from the end of the string. E.g. if string_n[2] is the third digit, then string_n[-3] is third from last. If we check this equation for each digit and it holds, then we know the number is perfectly symmetrical i.e. a palindrome! If it ever fails, we can return False immediately.
+Now we can take advantage of a Python feature, negative indices. Unlike most languages, we can use negative numbers as indices for something like a string, which will count backward from the end of the string. array[-1] returns the last element, array[-2] the second to last and so on. You could also of course use array[len(array)-1] to get the last element. This is great because if we add 1 to the current index of our loop, then it's inverse is that many positions from the end of the string. E.g. if string_n[2] is the third digit, then string_n[-3] is third from last. If we check this equation for each digit and it holds, then we know the number is perfectly symmetrical i.e. a palindrome! If it ever fails, we can return False immediately as a single mismatch disqualifies it as a palindrome. 
 
 >>if string_n[i] != string_n[(-1) * (i+1)]:
 >>	return False
 
-If we want to be a little more optimal, we don't have to check *every* index, only the first half, rounded down. consider 12321 or 1221. If we check the first two digits and their mirrors, we already know the number is a palindrome. For very large numbers this performance could matter, so we could modify the loop to skip the unneeded checks.
+If we want to be a little more optimal, we don't have to check this equation for *every* index, only the first half, rounded down. consider 12321 or 1221. If we check the first two digits and their mirrors, we already know the number is a palindrome. For very large numbers this performance could matter, so we could modify the loop to skip the unneeded checks.
 
 Outside the for loop, return True, since if we get there then it passed every check. 
 
@@ -42,8 +42,8 @@ def is_palindrome(n):
 			return False #... then n is not a palindrome
 	return True
 	
-This string-ification and iteration is useful for other types of problems, although palindromes in particular come up often!
+This string-ification and iteration is useful for other types of problems, although palindromes in particular come up often on PE!
 
 A quick brief on the math method. Instead of converting to a string, we can use integer division and the modulo operator to look at one digit at a time, although we will want something to store the digits so that we can check if they are equal (keeping them in a list or array is an easy way). 
 
-ex: Say our number is 363. First we take 363 modulo 10, which is 3. We know this is the last digit of the number. Now we perform integer division (e.g. with the Python double slash operator //) by 10, which returns 36, chopping off the digit we just found. Store the digit in a list and repeat this until the number is less than 10, when we know it's the last (actually first) digit, at which point we can loop to check for a palindrome the same way as before. This method is likely *faster* than converting to strings, at least in Python due to the overhead of the type conversion. 
+ex: Say our number is 363. First we take 363 modulo 10, which is 3. We know this is the last digit of the number. Now we perform integer division (e.g. with the Python double slash operator //) by 10, which returns 36, chopping off the digit we just found. Store the digit in a list and repeat this until the number is less than 10, when we know it's the last (actually first) digit, at which point we can check for a palindrome the same way as before. Although I haven't timed it, I expect this method is faster than converting to strings due to the overhead of the type conversion. 

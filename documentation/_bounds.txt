@@ -1,0 +1,22 @@
+Finding bounds
+
+This problem is not actually very difficult if you know how to break a number into digits. The key is knowing how long you have to count to know that you've found ALL solutions. If PE uses this wording of finding all of a certain type of number, it's generally implied there's an upper bound on the numbers you need to check, and you are supposed to find it. Sometimes you can get away with not actually finding the bounds, by guessing solutions that you find along the way, but it is a useful concept in many problems.
+
+===
+Digit factorials
+
+Problem 34
+145 is a curious number, as 1! + 4! + 5! = 1 + 24 + 120 = 145.
+
+Find the sum of all numbers which are equal to the sum of the factorial of their digits.
+
+Note: as 1! = 1 and 2! = 2 are not sums they are not included.
+===
+
+9! = 362880, the largest a single digit can contribute to the equation.
+that means if n gets big enough, no amount of 9s could make the sum of digit factorials greater than n.
+
+999,999 < 6*(9!) = 2,177,280
+9,999,999 > 7*(9!) = 2,540,160
+
+This means no solution can have more than 7 digits. We can optimize this much further, or even find an ideal bound, but this is good enough to solve the problem. The answer, in fact, is far smaller than our bound, so in this case it would have been easy to solve without finding one by guessing. 
